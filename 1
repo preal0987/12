@@ -1,0 +1,32 @@
+clear; clc;
+
+x = [21, 22, NaN, 23, 24, 120, 25, NaN, 26, 27];
+
+idx_missing = isnan(x);
+
+x_nomissing = x(~idx_missing);
+mu0 = mean(x_nomissing);
+sig0 = std(x_nomissing);
+
+idx_outlier = abs(x - mu0) > 3*sig0;
+
+x_temp = x;
+x_temp(idx_missing) = NaN;
+x_temp(idx_outlier) = NaN;
+
+not_nan = ~isnan(x_temp);
+m = mean(x_temp(not_nan));
+x_temp(isnan(x_temp)) = m;
+x_clean = x_temp;
+
+mu_clean = mean(x_clean);
+sig_clean = std(x_clean);
+
+plot(x, '-o')
+hold on
+plot(x_clean, '--s')
+xlabel('Index')
+ylabel('Value')
+title('Original Data and Cleaned Data')
+legend('Original x', 'Cleaned x')
+grid on
