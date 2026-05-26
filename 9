@@ -1,0 +1,33 @@
+clear; clc;
+
+T = readtable('train.csv');
+
+numMissingAge = sum(ismissing(T.Age));
+
+age = T.Age;
+validAge = age(~ismissing(age));
+meanAge = mean(validAge);
+T.Age(ismissing(T.Age)) = meanAge;
+
+muFare = mean(T.Fare);
+sigFare = std(T.Fare);
+
+idx = abs(T.Fare - muFare) <= 3 * sigFare;
+T_clean = T(idx, :);
+
+meanAge0 = mean(T_clean.Age(T_clean.Survived == 0));
+
+meanAge1 = mean(T_clean.Age(T_clean.Survived == 1));
+
+Survived = [0; 1];
+MeanAge = [meanAge0; meanAge1];
+Result = table(Survived, MeanAge);
+
+disp('Missing Age 개수:')
+disp(numMissingAge)
+disp('Fare 평균:')
+disp(muFare)
+disp('Fare 표준편차:')
+disp(sigFare)
+disp('Survived별 평균 나이:')
+disp(Result)
