@@ -1,0 +1,27 @@
+clear; clc;
+
+Wine = readtable('wine.data', ...
+    'FileType', 'text', ...
+    'ReadVariableNames', false);
+
+Wine.Properties.VariableNames = ...
+{'Class', 'Alcohol', 'MalicAcid', 'Ash', ...
+ 'Alcalinity', 'Magnesium', 'Phenols', ...
+ 'Flavanoids', 'Nonflavanoid', 'Proanthocyanins', ...
+ 'ColorIntensity', 'Hue', 'OD280', 'Proline'};
+
+X = Wine{:, {'Alcohol', 'MalicAcid', 'ColorIntensity'}};
+
+mu = mean(X);
+sig = std(X);
+
+X_std = (X - mu) ./ sig;
+
+normVec = sqrt(sum(X_std.^2, 2));
+
+cutoff = prctile(normVec, 90);
+
+T_top = Wine(normVec >= cutoff, :);
+
+disp(T_top(:, {'Class', 'Alcohol', ...
+    'MalicAcid', 'ColorIntensity'}))
