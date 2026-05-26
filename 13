@@ -1,0 +1,45 @@
+clear; clc;
+
+x = -5:0.05:5;
+y = -5:0.05:5;
+[X, Y] = meshgrid(x, y);
+
+Z = exp(-0.08*(X.^2 + Y.^2)) .* sin(3*X) .* cos(2*Y) ...
+    + 0.15*sin(X.*Y);
+
+figure;
+surf(X, Y, Z);
+
+shading interp;
+colorbar;
+
+xlabel('x-axis');
+ylabel('y-axis');
+zlabel('z=f(x,y)');
+
+title('Detailed Surface Plot of a Multivariable Function');
+
+grid on;
+set(gca, 'FontSize', 12);
+
+view(45, 30);
+
+hold on;
+Z0 = zeros(size(Z));
+surf(X, Y, Z0, 'FaceAlpha', 0.3);
+
+maxZ = max(Z(:));
+minZ = min(Z(:));
+
+[rowMax, colMax] = find(Z == maxZ);
+[rowMin, colMin] = find(Z == minZ);
+
+maxPoint = [X(rowMax, colMax), Y(rowMax, colMax), maxZ];
+minPoint = [X(rowMin, colMin), Y(rowMin, colMin), minZ];
+
+plot3(maxPoint(1), maxPoint(2), maxPoint(3), 'ro', 'MarkerSize', 10);
+plot3(minPoint(1), minPoint(2), minPoint(3), 'bo', 'MarkerSize', 10);
+
+legend('Surface', 'z=0 plane', 'Maximum point', 'Minimum point');
+
+saveas(gcf, 'complex_surface.png');
