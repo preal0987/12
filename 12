@@ -1,0 +1,58 @@
+clear; clc;
+
+rng(1);
+
+t = (1:120)';
+
+signal = 30 + 4*sin(t/8) + randn(120,1);
+
+signal(15) = NaN;
+signal(45) = NaN;
+signal(90) = NaN;
+
+signal(30) = 80;
+signal(75) = -20;
+signal(110) = 95;
+
+idxMissing = isnan(signal);
+numMissing = sum(idxMissing);
+
+meanValue = mean(signal(~idxMissing));
+signalFilled = signal;
+signalFilled(idxMissing) = meanValue;
+
+m = mean(signalFilled);
+s = std(signalFilled);
+
+idxOutlier = abs(signalFilled - m) > 3*s;
+
+signalClean = signalFilled;
+signalClean(idxOutlier) = NaN;
+
+validSignal = signalClean(~isnan(signalClean));
+
+minValue = min(validSignal);
+maxValue = max(validSignal);
+
+normSignal = (validSignal - minValue) / (maxValue - minValue);
+
+finalMean = mean(normSignal);
+finalVar = var(normSignal);
+
+figure;
+
+tiledlayout(2,1);
+
+nexttile;
+plot(validSignal);
+title('Valid Signal');
+xlabel('Index');
+ylabel('Value');
+grid on;
+
+nexttile;
+plot(normSignal);
+title('Normalized Signal');
+xlabel('Index');
+ylabel('Normalized Value');
+grid on;
